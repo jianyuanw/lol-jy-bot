@@ -26,7 +26,7 @@ def slap(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
     group_title = update.effective_chat.title
     logging.info(f'Received command /slap from {first_name} in {group_title}')
-    update.message.reply_text(text=f'JY slaps {first_name} around with a large trout', quote=False)
+    update.message.reply_text(text=f'JY slaps {first_name} around a bit with a large trout', quote=False)
 
 def leave(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
@@ -44,13 +44,13 @@ def sticker(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
     group_title = update.effective_chat.title
     logging.info(f'Received sticker from {first_name} in {group_title}')
-    update.message.reply_text(f'Lol {first_name}, what does the sticker mean?')
+    update.message.reply_text(f'Lol {first_name}, please engage in meaningful conversation.')
 
 def gif(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
     group_title = update.effective_chat.title
     logging.info(f'Received GIF from {first_name} in {group_title}')
-    update.message.reply_text(f'Lol {first_name}, what does the GIF mean?')
+    update.message.reply_text(f'Lol {first_name}, please engage in meaningful conversation.')
 
 def edited_message(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
@@ -65,6 +65,8 @@ def all_messages(update: Update, context: CallbackContext) -> None:
     message = update.message.text
     logging.info(f'Storing message | Message ID: {message_id} | Message: {message}')
     context.chat_data[message_id] = message
+    if 'hang' in message.lower():
+        update.message.reply_text('Remember to include time/place/activity')
 
 def main() -> None:
     verify_token()
