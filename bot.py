@@ -1,5 +1,8 @@
-import os, logging
+import logging
+import os
+import requests
 from dotenv import load_dotenv
+from random import randrange
 from telegram import Bot, Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
 
@@ -40,6 +43,17 @@ def lol(update: Update, context: CallbackContext) -> None:
     logging.info(f'Received command /lol from {first_name} in {group_title}')
     update.message.reply_text(text=f'Lol {first_name}', quote=False)
 
+def motivate(update: Update, context: CallbackContext) -> None:
+    first_name = update.effective_user.first_name
+    group_title = update.effective_chat.title
+    logging.info(f'Received command /motivate from {first_name} in {group_title}')
+    result = requests.get('https://type.fit/api/quotes').json()
+    quote = result[randrange(len(result))]
+    text = quote['text']
+    author = quote['author']
+    message = f'"{text}"\n- {author}'
+    update.message.reply_text(message)
+
 def sticker(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
     group_title = update.effective_chat.title
@@ -78,8 +92,9 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler('slap', slap))
     dispatcher.add_handler(CommandHandler('leave', leave))
     dispatcher.add_handler(CommandHandler('lol', lol))
-    dispatcher.add_handler(MessageHandler(Filters.sticker, sticker))
-    dispatcher.add_handler(MessageHandler(Filters.document.gif, gif))
+    dispatcher.add_handler(CommandHandler('motivate', motivate))
+    # dispatcher.add_handler(MessageHandler(Filters.sticker, sticker))
+    # dispatcher.add_handler(MessageHandler(Filters.document.gif, gif))
     dispatcher.add_handler(MessageHandler(Filters.update.edited_message, edited_message))
     dispatcher.add_handler(MessageHandler(Filters.text, all_messages))
 
