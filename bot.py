@@ -62,7 +62,7 @@ def motivate(update: Update, context: CallbackContext) -> None:
 def countdownto(update: Update, context: CallbackContext) -> None:
     args = context.args
     if len(args) == 0:
-        update.message.reply_text('Hi! Use "/countdownto DDMMM" to perform the countdown.')
+        update.message.reply_text('Use "/countdownto DDMMM" to perform the countdown.')
     else:
         date_str = args[0]
         try:
@@ -70,49 +70,40 @@ def countdownto(update: Update, context: CallbackContext) -> None:
             date_str += str(date_today.year)
             date_countdownto = datetime.datetime.strptime(date_str, '%d%b%Y').date()
             days = (date_countdownto - date_today).days
-            update.message.reply_text(f'{days} more day(s) to freedom!')
+            date_countdownto_str = datetime.date.strftime(date_countdownto, '%d %b')
+            update.message.reply_text(f'{days} more day(s) to {date_countdownto_str}')
         except ValueError:
             update.message.reply_text('Incorrect date format. Please enter in DDMMM format (eg. 01Jan).')
 
-def sticker(update: Update, context: CallbackContext) -> None:
-    first_name = update.effective_user.first_name
-    group_title = update.effective_chat.title
-    # logging.info(f'Received sticker from {first_name} in {group_title}')
-    update.message.reply_text(f'Lol {first_name}, please engage in meaningful conversation.')
+# def sticker(update: Update, context: CallbackContext) -> None:
+#     first_name = update.effective_user.first_name
+#     group_title = update.effective_chat.title
+#     update.message.reply_text(f'Lol {first_name}, please engage in meaningful conversation.')
 
-def gif(update: Update, context: CallbackContext) -> None:
-    first_name = update.effective_user.first_name
-    group_title = update.effective_chat.title
-    # logging.info(f'Received GIF from {first_name} in {group_title}')
-    update.message.reply_text(f'Lol {first_name}, please engage in meaningful conversation.')
+# def gif(update: Update, context: CallbackContext) -> None:
+#     first_name = update.effective_user.first_name
+#     group_title = update.effective_chat.title
+#     update.message.reply_text(f'Lol {first_name}, please engage in meaningful conversation.')
 
-def edited_message(update: Update, context: CallbackContext) -> None:
-    first_name = update.effective_user.first_name
-    group_title = update.effective_chat.title
-    message_id = update.edited_message.message_id
-    original_message = context.chat_data.get(message_id, 'Not found')
-    # logging.info(f'Detected edited message by {first_name} in {group_title}. Original message: "{original_message}"')
-    update.edited_message.reply_text(f'Caught tampering with evidence!\nOriginal message: "{original_message}"')
+# def edited_message(update: Update, context: CallbackContext) -> None:
+#     first_name = update.effective_user.first_name
+#     group_title = update.effective_chat.title
+#     message_id = update.edited_message.message_id
+#     original_message = context.chat_data.get(message_id, 'Not found')
+#     update.edited_message.reply_text(f'Caught tampering with evidence!\nOriginal message: "{original_message}"')
 
-def all_messages(update: Update, context: CallbackContext) -> None:
-    message_id = update.message.message_id
-    message = update.message.text
-    # logging.info(f'Storing message | Message ID: {message_id} | Message: {message}')
-    context.chat_data[message_id] = message
-    if 'hang' in message.lower():
-        update.message.reply_text('Remember to include time/place/activity')
+# def all_messages(update: Update, context: CallbackContext) -> None:
+#     message_id = update.message.message_id
+#     message = update.message.text
+#     context.chat_data[message_id] = message
+#     if 'hang' in message.lower():
+#         update.message.reply_text('Remember to include time/place/activity')
 
-def test(update: Update, context: CallbackContext) -> None:
-    date_countdownto = datetime.date(2021, 6, 24)
-    date_today = datetime.date.today()
-    days = (date_countdownto - date_today).days
-    context.bot.send_message(chat_id=FUNNY_CHAT_ID, text=f'{days} more day(s) to freedom!')
-
-def countdown_daily(context: CallbackContext) -> None:
-    date_countdownto = datetime.date(2021, 6, 24)
-    date_today = datetime.date.today()
-    days = (date_countdownto - date_today).days
-    context.bot.send_message(chat_id=FUNNY_CHAT_ID, text=f'Good morning. {days} more day(s) to freedom!')
+# def countdown_daily(context: CallbackContext) -> None:
+#     date_countdownto = datetime.date(2021, 6, 24)
+#     date_today = datetime.date.today()
+#     days = (date_countdownto - date_today).days
+#     context.bot.send_message(chat_id=FUNNY_CHAT_ID, text=f'Good morning. {days} more day(s) to freedom!')
 
 def main() -> None:
     verify_token()
@@ -130,12 +121,11 @@ def main() -> None:
     # dispatcher.add_handler(MessageHandler(Filters.document.gif, gif))
     # dispatcher.add_handler(MessageHandler(Filters.update.edited_message, edited_message))
     # dispatcher.add_handler(MessageHandler(Filters.text, all_messages))
-    dispatcher.add_handler(CommandHandler('test', test))
 
-    job_queue = updater.job_queue
-    timezone = pytz.timezone('Asia/Singapore')
-    time = datetime.time(hour=7, tzinfo=timezone)
-    job_queue.run_daily(countdown_daily, time)
+    # job_queue = updater.job_queue
+    # timezone = pytz.timezone('Asia/Singapore')
+    # time = datetime.time(hour=7, tzinfo=timezone)
+    # job_queue.run_daily(countdown_daily, time)
 
     logging.info('Starting bot...')
     updater.start_polling()
