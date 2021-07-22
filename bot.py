@@ -1,13 +1,11 @@
 import datetime
 import logging
 import os
-import pytz
 import requests
 from dotenv import load_dotenv
 from random import randrange
 from telegram import Bot, Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
-from telegram.ext.jobqueue import Days
+from telegram.ext import Updater, CommandHandler, CallbackContext
 
 # logging.basicConfig(filename='bot.log', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
