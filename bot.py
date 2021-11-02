@@ -34,8 +34,8 @@ def lol(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(text=f'Lol {first_name}', quote=False)
 
 def motivate(update: Update, context: CallbackContext) -> None:
-    with open('quotes.txt', 'r') as f:
-        quotes = f.readlines
+    with open('quotes.txt', encoding='utf-8') as f:
+        quotes = f.readlines()
         quote = quotes[randrange(len(quotes))]
         update.message.reply_text(quote)
 
