@@ -54,7 +54,7 @@ def main() -> None:
         listen='0.0.0.0',
         port=PORT,
         url_path=TOKEN,
-        webhook_url="https://<appname>.herokuapp.com/" + TOKEN
+        webhook_url="https://lol-jy-bot.herokuapp.com/" + TOKEN
     )
     updater.idle()
 
