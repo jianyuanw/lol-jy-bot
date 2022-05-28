@@ -1,25 +1,25 @@
-import logging
-import os
+import logging, os
 from dotenv import load_dotenv
 from random import randrange
-from telegram import Bot, Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram import Update
+from telegram.ext import CallbackContext, CommandHandler, Updater
 
-logging.basicConfig(filename='bot.log', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
+# Load environment variables from .env
 load_dotenv()
+
+# Constants
+PORT = 8443
 TOKEN = os.environ.get('TOKEN')
 
-def verify_token() -> None:
-    logging.info('Verifying token...')
-    bot = Bot(token=TOKEN)
-    try:
-        logging.info(f'Verified token | Bot details: {bot.get_me()}')
-    except:
-        logging.info('Failed to verify token')
-
+# Handlers
 def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(f'Welcome to Lol JY bot')
+    update.message.reply_text(text='Welcome to Lol JY bot', quote=False)
 
 def slap(update: Update, context: CallbackContext) -> None:
     first_name = update.effective_user.first_name
@@ -39,20 +39,23 @@ def motivate(update: Update, context: CallbackContext) -> None:
         quote = quotes[randrange(len(quotes))]
         update.message.reply_text(quote)
 
+# Entry point of application
 def main() -> None:
-    verify_token()
+    updater = Updater(token=TOKEN) 
 
-    updater = Updater(token=TOKEN)
     dispatcher = updater.dispatcher
-
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('slap', slap))
     dispatcher.add_handler(CommandHandler('leave', leave))
     dispatcher.add_handler(CommandHandler('lol', lol))
     dispatcher.add_handler(CommandHandler('motivate', motivate))
 
-    logging.info('Starting bot...')
-    updater.start_polling()
+    updater.start_webhook(
+        listen='0.0.0.0',
+        port=PORT,
+        url_path=TOKEN,
+        webhook_url="https://<appname>.herokuapp.com/" + TOKEN
+    )
     updater.idle()
 
 if __name__ == '__main__':
