@@ -14,9 +14,9 @@ logging.basicConfig(
 load_dotenv()
 
 # Constants
-PATH = os.environ.get('URL_PATH', 'URLPath')
 PORT = int(os.environ.get('PORT', '8443'))
 TOKEN = os.environ.get('TOKEN')
+URL_PATH = os.environ.get('URL_PATH', 'URLPath')
 
 # Handlers
 def start(update: Update, context: CallbackContext) -> None:
@@ -54,8 +54,8 @@ def main() -> None:
     updater.start_webhook(
         listen='0.0.0.0',
         port=PORT,
-        url_path=TOKEN,
-        webhook_url="https://lol-jy-bot.herokuapp.com/" + TOKEN
+        url_path=URL_PATH,
+        webhook_url=f'https://lol-jy-bot.herokuapp.com/{URL_PATH}'
     )
     updater.idle()
 
