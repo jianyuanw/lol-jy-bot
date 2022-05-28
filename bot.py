@@ -14,7 +14,8 @@ logging.basicConfig(
 load_dotenv()
 
 # Constants
-PORT = 8443
+PATH = os.environ.get('URL_PATH', 'URLPath')
+PORT = int(os.environ.get('PORT', '8443'))
 TOKEN = os.environ.get('TOKEN')
 
 # Handlers
