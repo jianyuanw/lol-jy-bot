@@ -1,36 +1,32 @@
-# Code for local webhook server that accepts bot updates (HTTP POST) from Telegram.
-# Expose 'localhost' to the public using a tool such as ngrok.
+# Code for AWS Lambda function that acts as a webhook for Telegram bot updates.
+# Does not work on its own (ie. "python bot_lambda.py" will fail).
+# Only requires Python's standard libraries.
 
 
+import json
 import os
-from dotenv import load_dotenv
-from flask import Flask, request
 from random import randrange
 
 from quotes import quotes
 
 
-# Load environment variables from .env
-load_dotenv()
+# Load environment variables
 SECRET_TOKEN = os.environ.get('SECRET_TOKEN')
 
 
-# Setup webhook using Flask
-app = Flask(__name__)
-
-@app.post('/')
-def hello_world():
-    if 'x-telegram-bot-api-secret-token' not in request.headers:
+# AWS Lambda handler function
+def lambda_handler(event, context):
+    if 'x-telegram-bot-api-secret-token' not in event['headers']:
         print('Missing secret token')
         return 'OK'; # Acknowledge the update from telegram bot server
-    if request.headers['x-telegram-bot-api-secret-token'] != SECRET_TOKEN:
+    if event['headers']['x-telegram-bot-api-secret-token'] != SECRET_TOKEN:
         print('Invalid secret token')
         return 'OK';
-    data = request.get_json()
-    if 'message' not in data:
+    body = json.loads(event['body'])
+    if 'message' not in body:
         print('Missing message')
         return 'OK';
-    message = data['message']
+    message = body['message']
     if 'entities' not in message:
         print('Missing entities')
         return 'OK';
@@ -57,17 +53,18 @@ def process_bot_command(message) -> tuple[int, str, int]:
     if index_at != -1:
         text = text[:index_at]
     command = text[1:].strip()
-    match command:
-        case 'start':
-            reply_text = 'Welcome to Lol JY Bot'
-        case 'slap':
-            reply_text = f'JY slaps {from_first_name} around a bit with a large trout'
-        case 'leave':
-            reply_text = f'{from_first_name} has left the chat'
-        case 'lol':
-            reply_text = f'Lol {from_first_name}'
-        case 'motivate':
-            reply_text = quotes[randrange(len(quotes))]
-        case _:
-            reply_text = 'Unknown bot command'
+    # Changed match-case to if-loop as AWS Lambda uses Python 3.9 which does not
+    # yet support match-case.
+    if command == 'start':
+        reply_text = 'Welcome to Lol JY Bot'
+    elif command == 'slap':
+        reply_text = f'JY slaps {from_first_name} around a bit with a large trout'
+    elif command == 'leave':
+        reply_text = f'{from_first_name} has left the chat'
+    elif command == 'lol':
+        reply_text = f'Lol {from_first_name}'
+    elif command == 'motivate':
+        reply_text = quotes[randrange(len(quotes))]
+    else:
+        reply_text = 'Unknown bot command'
     return chat_id, reply_text, message_id
